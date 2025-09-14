@@ -2,7 +2,7 @@ const express = require("express");
 const path = require("path");
 
 // Import my custom weather routes
-const weatherRoutes = require("./routes/weather");
+const weatherRoutes = require("./routes/weatherRouter");
 
 const app = express();
 const port = process.env.PORT || 3000;
