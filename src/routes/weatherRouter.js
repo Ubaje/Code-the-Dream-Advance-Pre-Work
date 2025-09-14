@@ -18,24 +18,26 @@ router.get("/temperature/:city", async (req, res) => {
     try {
         const { latitude, longitude, name, country } =
             await geocodingService.getCityCoordinates(req.params.city);
-        const weatherData = await weatherService.getWeatherData(
-            latitude,
-            longitude
-        );
+
+        // Get current weather and temperature forecast in parallel
+        const [currentData, forecastData] = await Promise.all([
+            weatherService.getCurrentWeather(latitude, longitude),
+            weatherService.getTemperatureForecast(latitude, longitude),
+        ]);
 
         res.json({
             success: true,
             city: { name, country },
             weather: {
                 current: {
-                    temperature: weatherData.current.temperature,
+                    temperature: currentData.current.temperature,
                     description: getWeatherDescription(
-                        weatherData.current.weatherCode
+                        currentData.current.weatherCode
                     ),
                 },
                 hourly: {
-                    time: weatherData.hourly.time,
-                    temperature_2m: weatherData.hourly.temperature_2m,
+                    time: forecastData.hourly.time,
+                    temperature_2m: forecastData.hourly.temperature_2m,
                 },
             },
         });
@@ -49,22 +51,24 @@ router.get("/humidity/:city", async (req, res) => {
     try {
         const { latitude, longitude, name, country } =
             await geocodingService.getCityCoordinates(req.params.city);
-        const weatherData = await weatherService.getWeatherData(
-            latitude,
-            longitude
-        );
+
+        // Get current weather and humidity forecast in parallel
+        const [currentData, forecastData] = await Promise.all([
+            weatherService.getCurrentWeather(latitude, longitude),
+            weatherService.getHumidityForecast(latitude, longitude),
+        ]);
 
         res.json({
             success: true,
             city: { name, country },
             weather: {
                 current: {
-                    humidity: weatherData.current.humidity,
+                    humidity: currentData.current.humidity,
                 },
                 hourly: {
-                    time: weatherData.hourly.time,
+                    time: forecastData.hourly.time,
                     relative_humidity_2m:
-                        weatherData.hourly.relative_humidity_2m,
+                        forecastData.hourly.relative_humidity_2m,
                 },
             },
         });
@@ -78,21 +82,23 @@ router.get("/wind/:city", async (req, res) => {
     try {
         const { latitude, longitude, name, country } =
             await geocodingService.getCityCoordinates(req.params.city);
-        const weatherData = await weatherService.getWeatherData(
-            latitude,
-            longitude
-        );
+
+        // Get current weather and wind forecast in parallel
+        const [currentData, forecastData] = await Promise.all([
+            weatherService.getCurrentWeather(latitude, longitude),
+            weatherService.getWindForecast(latitude, longitude),
+        ]);
 
         res.json({
             success: true,
             city: { name, country },
             weather: {
                 current: {
-                    windSpeed: weatherData.current.windSpeed,
+                    windSpeed: currentData.current.windSpeed,
                 },
                 hourly: {
-                    time: weatherData.hourly.time,
-                    wind_speed_10m: weatherData.hourly.wind_speed_10m,
+                    time: forecastData.hourly.time,
+                    wind_speed_10m: forecastData.hourly.wind_speed_10m,
                 },
             },
         });
@@ -106,7 +112,9 @@ router.get("/elevation/:city", async (req, res) => {
     try {
         const { latitude, longitude, name, country } =
             await geocodingService.getCityCoordinates(req.params.city);
-        const weatherData = await weatherService.getWeatherData(
+
+        // Only need location data for elevation
+        const locationData = await weatherService.getLocationData(
             latitude,
             longitude
         );
@@ -116,7 +124,7 @@ router.get("/elevation/:city", async (req, res) => {
             city: { name, country },
             weather: {
                 location: {
-                    elevation: weatherData.location.elevation,
+                    elevation: locationData.location.elevation,
                 },
             },
         });
@@ -128,24 +136,41 @@ router.get("/elevation/:city", async (req, res) => {
 // Legacy endpoint for complete weather data
 router.get("/:city", async (req, res) => {
     try {
-        const cityData = await geocodingService.getCityCoordinates(
-            req.params.city
-        );
-        const weatherData = await weatherService.getWeatherData(
-            cityData.latitude,
-            cityData.longitude
-        );
+        const { latitude, longitude, name, country } =
+            await geocodingService.getCityCoordinates(req.params.city);
 
+        // Get all weather data in parallel
+        const [currentData, tempForecast, humidityForecast, windForecast] =
+            await Promise.all([
+                weatherService.getCurrentWeather(latitude, longitude),
+                weatherService.getTemperatureForecast(latitude, longitude),
+                weatherService.getHumidityForecast(latitude, longitude),
+                weatherService.getWindForecast(latitude, longitude),
+            ]);
+
+        // Combine the data
         res.json({
             success: true,
-            city: cityData,
+            city: {
+                name,
+                country,
+                latitude,
+                longitude,
+            },
             weather: {
-                ...weatherData,
+                location: currentData.location,
                 current: {
-                    ...weatherData.current,
+                    ...currentData.current,
                     description: getWeatherDescription(
-                        weatherData.current.weatherCode
+                        currentData.current.weatherCode
                     ),
+                },
+                hourly: {
+                    time: tempForecast.hourly.time,
+                    temperature_2m: tempForecast.hourly.temperature_2m,
+                    relative_humidity_2m:
+                        humidityForecast.hourly.relative_humidity_2m,
+                    wind_speed_10m: windForecast.hourly.wind_speed_10m,
                 },
             },
         });
