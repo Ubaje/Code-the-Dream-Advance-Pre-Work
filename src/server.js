@@ -19,15 +19,6 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Health check for monitoring
-app.get("/api/health", (req, res) => {
-    res.json({
-        status: "healthy",
-        uptime: process.uptime(),
-        timestamp: new Date().toISOString(),
-    });
-});
-
 // Error handling for undefined routes
 app.use((req, res) => {
     res.status(404).json({
@@ -41,10 +32,8 @@ app.listen(port, () => {
     console.log(`
 🌤  Weather App Server Running!
     
-   Local:            http://localhost:${port}
-   Health Check:     http://localhost:${port}/api/health
-   API Documentation: http://localhost:${port}/api/weather/{city}
-   
+   Local:    http://localhost:${port}
+
    Ready for requests!
 `);
 });
