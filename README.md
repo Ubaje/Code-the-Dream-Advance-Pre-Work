@@ -68,7 +68,3 @@ Code the Dream Advance Pre-Work/
 - JavaScript
 - Node.js
 - Express.js
-
-## License
-
-This project is licensed under the ISC License.
