@@ -1,0 +1,25 @@
+{
+    "name": "code-the-dream-advance-pre-work",
+    "version": "1.0.0",
+    "description": "",
+    "main": "script.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Ubaje/Code-the-Dream-Advance-Pre-Work.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Ubaje/Code-the-Dream-Advance-Pre-Work/issues"
+    },
+    "homepage": "https://github.com/Ubaje/Code-the-Dream-Advance-Pre-Work#readme",
+    "dependencies": {
+        "express": "^5.1.0",
+        "openmeteo": "^1.2.0"
+    }
+}

@@ -1,0 +1,61 @@
+s<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="A simple weather application that shows current weather conditions for any city"
+        />
+        <title>Weather Finder | Simple Weather App</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <header role="banner">
+            <h1>Weather Finder</h1>
+            <p class="subtitle">Get current weather information for any city</p>
+        </header>
+
+        <main role="main">
+            <section class="weather-section">
+                <form id="location-form" role="search" aria-label="City search">
+                    <div class="form-group">
+                        <label for="city">City Name:</label>
+                        <input
+                            type="text"
+                            id="city"
+                            name="city"
+                            placeholder="Enter city (e.g., Houston)"
+                            required
+                            aria-required="true"
+                            pattern="[a-zA-Z\s-]+"
+                            title="Please enter a valid city name using letters, spaces, and hyphens only"
+                        />
+                    </div>
+                    <button type="submit" aria-label="Search for weather">
+                        Get Weather
+                    </button>
+                </form>
+
+                <div id="weather-result" role="status" aria-live="polite"></div>
+
+                <div id="weather-nav" class="weather-nav" style="display: none">
+                    <button class="nav-btn" data-view="temperature">
+                        Current Temperature
+                    </button>
+                    <button class="nav-btn" data-view="humidity">
+                        Humidity
+                    </button>
+                    <button class="nav-btn" data-view="wind">Wind Speed</button>
+                    <button class="nav-btn" data-view="elevation">
+                        Elevation
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <footer role="contentinfo"></footer>
+
+        <script src="script.js"></script>
+    </body>
+</html>
